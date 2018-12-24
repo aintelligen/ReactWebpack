@@ -1127,16 +1127,5 @@ import { Provider } from 'react-redux'
 
 我们看到项目神奇的运行了，好了文章到了这里也算结束了，第一遍消化不了的建议多看几篇
 
-https://segmentfault.com/img/bV2xty?w=909&h=622
-https://segmentfault.com/img/bV2xt1?w=910&h=609
-https://segmentfault.com/img/bV2xHa?w=780&h=596
-https://segmentfault.com/img/bV2AsZ?w=942&h=366
-https://segmentfault.com/img/bV2ALF?w=804&h=657
-https://segmentfault.com/img/bV2ASQ?w=696&h=282
-https://segmentfault.com/img/bV2A3J?w=706&h=244
-https://segmentfault.com/img/bV2BaO?w=899&h=679
-https://segmentfault.com/img/bV2Be4?w=1012&h=502
-https://segmentfault.com/img/bV2Bj4?w=1218&h=538
-https://segmentfault.com/img/bV2Blg?w=744&h=462
-https://segmentfault.com/img/bV2Boo?w=889&h=499
-https://segmentfault.com/img/bV2BY3?w=1060&h=454
+
+参考文献:[跟着例子一步步学习redux+react-redux](https://blog.csdn.net/bbsyi/article/details/82426733)
