@@ -11,15 +11,18 @@ Dumb 组件
 
 # React.js的context
 这一节的内容其实是讲一个react当中一个你可能永远用不到的特性——context，但是它对你理解react-redux很有好处。那么context是干什么的呢？看下图：
-![图片](/react-3-redux/img/1.png)
+  
+![图片](/react-3-redux/img/1.png)  
 假设现在这个组件树代表的应用是用户可以自主换主题色的，每个子组件会根据主题色的不同调整自己的字体颜色。“主题色”这个状态是所有组件共享的状态，根据状态提升中所提到的，需要把这个状态提升到根节点的 Index 上，然后把这个状态通过 props 一层层传递下去：
-![](/react-3-redux/img/2.png)
+  
+![](/react-3-redux/img/2.png)  
 如果要改变主题色，在 Index 上可以直接通过 this.setState({ themeColor: 'red' }) 来进行。这样整颗组件树就会重新渲染，子组件也就可以根据重新传进来的 props.themeColor 来调整自己的颜色。
 
 但这里的问题也是非常明显的，我们需要把 themeColor 这个状态一层层手动地从组件树顶层往下传，每层都需要写 props.themeColor。如果我们的组件树很层次很深的话，这样维护起来简直是灾难。
 
 如果这颗组件树能够全局共享这个状态就好了，我们要的时候就去取这个状态，不用手动地传：
-![](/react-3-redux/img/3.png)
+  
+![](/react-3-redux/img/3.png)  
 就像这样，Index 把 state.themeColor 放到某个地方，这个地方是每个 Index 的子组件都可以访问到的。当某个子组件需要的时候就直接去那个地方拿就好了，而不需要一层层地通过 props 来获取。不管组件树的层次有多深，任何一个组件都可以直接到这个公共的地方提取 themeColor 状态。
 
 React.js 的 context 就是这么一个东西，某个组件只要往自己的 context 里面放了某些状态，这个组件之下的所有子组件都直接访问这个状态而不需要通过中间组件的传递。一个组件的 context 只有它的子组件能够访问。
@@ -152,7 +155,8 @@ renderApp(appState)
 ```
 很简单，renderApp 会调用 rendeTitle 和 renderContent，而这两者会把 appState 里面的数据通过原始的 DOM 操作更新到页面上。
 
-![](/react-3-redux/img/4.png)
+  
+![](/react-3-redux/img/4.png)  
 这是一个很简单的 App，但是它存在一个重大的隐患，我们渲染数据的时候，使用的是一个共享状态 appState，每个人都可以修改它。这里的矛盾就是：“模块（组件）之间需要共享数据”，和“数据可能被任意修改导致不可预料的结果”之间的矛盾。
 
 为了解决这个问题，我们可以学习 React.js 团队的做法，把事情搞复杂一些，提高数据修改的门槛：模块（组件）之间可以共享数据，也可以改数据。但是我们约定，这个数据并不能直接改，你只能执行某些我允许的某些修改，而且你修改的必须大张旗鼓地告诉我。
@@ -180,7 +184,8 @@ dispatch({ type: 'UPDATE_TITLE_TEXT', text: 'this is dispatch' }) // 修改标�
 dispatch({ type: 'UPDATE_TITLE_COLOR', color: 'blue' }) // 修改标题颜色
 ```
 我们再也不用担心共享数据状态的修改的问题，我们只要把控了 dispatch，所有的对 appState 的修改就无所遁形，毕竟只有一根箭头指向 appState 了。
-![](/react-3-redux/img/5.png)
+  
+![](/react-3-redux/img/5.png)  
 
 #构建共享状态仓库
 上一节我们有了 appState 和 dispatch，现在我们把它们集中到一个地方，给这个地方起个名字叫做 store，然后构建一个函数 createStore，用来专门生产这种 state 和 dispatch 的集合，这样别的 App 也可以用这种模式了：
@@ -287,7 +292,8 @@ renderApp(store.getState()) // 首次渲染页面
 store.dispatch({ type: 'UPDATE_TITLE_TEXT', text: 'this is dispatch' }) // 修改标题文本
 store.dispatch({ type: 'UPDATE_TITLE_COLOR', color: 'blue' }) // 修改标题颜色
 ```
-![](/react-3-redux/img/6.png)
+  
+![](/react-3-redux/img/6.png)  
 可以看到问题就是，每当更新数据就重新渲染整个 App，但其实我们两次更新都没有动到 appState 里面的 content 字段的对象，而动的是 title 字段。其实并不需要重新 renderContent，它是一个多余的更新操作，现在我们需要优化它。
 
 这里提出的解决方案是，在每个渲染函数执行渲染操作之前先做个判断，判断传入的新数据和旧的数据是不是相同，相同的话就不渲染了。
@@ -398,7 +404,8 @@ function createStore (state, stateChanger) {
 }
 ```
 好了，我们在运行下看看结果是不是变成我们预期的那样了？
-![](/react-3-redux/img/7.png)
+  
+![](/react-3-redux/img/7.png)  
 
 #我就喜欢叫它 “reducer”
 经过了这么多节的优化，我们有了一个很通用的 createStore，主要传入appState、stateChanger就能使用。那么appState和stateChanger是否可以合并到一起去呢？显然可以：
@@ -479,7 +486,8 @@ function createStore (reducer) {
 前面我们在react.js的context中提出，我们可用把共享状态放到父组件的 context 上，这个父组件下所有的组件都可以从 context 中直接获取到状态而不需要一层层地进行传递了。但是直接从 context 里面存放、获取数据增强了组件的耦合性；并且所有组件都可以修改 context 里面的状态就像谁都可以修改共享状态一样，导致程序运行的不可预料。
 
 既然这样，为什么不把 context 和 store 结合起来？毕竟 store 的数据不是谁都能修改，而是约定只能通过 dispatch 来进行修改，这样的话每个组件既可以去 context 里面获取 store 从而获取状态，又不用担心它们乱改数据了。我们还是以“主题色”这个例子来讲解，假设我们有这么一颗组件树：
-![](/react-3-redux/img/8.png)
+  
+![](/react-3-redux/img/8.png)  
 Header 和 Content 的组件的文本内容会随着主题色的变化而变化，而 Content 下的子组件 ThemeSwitch 有两个按钮，可以切换红色和蓝色两种主题，按钮的颜色也会随着主题色的变化而变化。
 
 用 create-react-app 新建一个工程react-redux-demo3：
@@ -559,7 +567,8 @@ class App extends Component {
 export default App
 ```
 这样我们就简单地把整个组件树搭建起来了，用 npm start 启动工程，然后可以看到页面上显示：
-![](/react-3-redux/img/9.png)
+  
+![](/react-3-redux/img/9.png)  
 
 #结合 context 和 store
 既然要把 store 和 context 结合起来，我们就先在 src目下创建store.js 和 reducer.js俩文件：
@@ -735,7 +744,8 @@ class ThemeSwitch extends Component {
 我们在 constructor 里面初始化了组件自己的 themeColor 状态。然后在生命周期中 componentWillMount 调用 _updateThemeColor，_updateThemeColor 会从 context 里面把 store 取出来，然后通过 store.getState() 获取状态对象，并且用里面的 themeColor 字段设置组件的 state.themeColor。
 
 然后在 render 函数里面获取了 state.themeColor 来设置标题的样式，页面上就会显示：
-1![](/react-3-redux/img/10.png)
+  1
+![](/react-3-redux/img/10.png)  
 我们给两个按钮都加上了 onClick 事件监听，并绑定到了 handleSwitchColor 方法上，两个按钮分别给这个方法传入不同的颜色 red 和 blue，handleSwitchColor 会根据传入的颜色 store.dispatch 一个 action 去修改颜色。
 
 当然你现在点击按钮还是没有反应的。因为点击按钮的时候，只是更新 store 里面的 state，而并没有在 store.state 更新以后去重新渲染数据，我们其实就是忘了 store.subscribe 了。
@@ -751,7 +761,8 @@ class ThemeSwitch extends Component {
 ...
 ```
 通过 store.subscribe，在数据变化的时候重新调用 _updateThemeColor，而 _updateThemeColor 会去 store 里面取最新的 themeColor 然后通过 setState 重新渲染组件，这时候组件就更新了。现在可以自由切换主题色了：
-1![](/react-3-redux/img/11.png)
+  1
+![](/react-3-redux/img/11.png)  
 我们顺利地把 store 和 context 结合起来，这是 Redux 和 React.js 的第一次胜利会师，当然还有很多需要优化的地方。
 
 connect 和 mapStateToProps
@@ -768,7 +779,8 @@ connect 和 mapStateToProps
 我们把这种组件叫做 Pure Component，因为它就像纯函数一样，可预测性非常强，对参数（props）以外的数据零依赖，也不产生副作用。这种组件也叫 Dumb Component，因为它们呆呆的，让它干啥就干啥。写组件的时候尽量写 Dumb Component 会提高我们的组件的可复用性。
 
 到这里思路慢慢地变得清晰了，我们需要高阶组件帮助我们从 context 取数据，我们也需要写 Dumb 组件帮助我们提高组件的复用性。所以我们尽量多地写 Dumb 组件，然后用高阶组件把它们包装一层，高阶组件和 context 打交道，把里面数据取出来通过 props 传给 Dumb 组件。
-1![](/react-3-redux/img/12.png)
+  1
+![](/react-3-redux/img/12.png)  
 我们把这个高阶组件起名字叫 connect，因为它把 Dumb 组件和 context 连接（connect）起来了：
 ```jsx
 import React, { Component } from 'react'
@@ -1110,7 +1122,8 @@ import { Provider } from 'react-redux'
 ```
 接着删除 src/react-redux.js，它的已经用处不大了。最后启动工程 npm start：
 
-1![](/react-3-redux/img/13.png)
+  1
+![](/react-3-redux/img/13.png)  
 
 我们看到项目神奇的运行了，好了文章到了这里也算结束了，第一遍消化不了的建议多看几篇
 
